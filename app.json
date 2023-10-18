@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "calculador-gastos",
+    "name": "Calcula gastos",
     "slug": "calculador-gastos",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/calcula-gastos.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/calcula-gastos.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -21,10 +21,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.alem98.calculadorgastos"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bc4d4a07-3c29-4042-ad21-5440b7199c9c"
+      }
     }
   }
 }
