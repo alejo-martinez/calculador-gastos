@@ -18,7 +18,7 @@ const Home = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Divisor de gastos</Text>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Members')}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Bills')}>
             <Text style={styles.textButton}>Comenzar a calcular</Text>
           </TouchableOpacity>
         </View>

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity, ScrollView } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useSpent } from './context/spentContext';
@@ -7,16 +7,37 @@ import { useSpent } from './context/spentContext';
 
 const Members = ({ navigation }) => {
 
+  useEffect(() => {
+    setForms([...gastos])
+
+  }, [])
+
+
   const [forms, setForms] = useState([]);
   const [name, setName] = useState('');
   const [gasto, setGasto] = useState([]);
   const [additionalGasto, setAdditionalGasto] = useState([]);
   const [error, setError] = useState('');
+  const [indiceGasto, setIndiceGasto] = useState(0);
 
-  const { calcularGastos } = useSpent();
+  const { calcularGastos, gastos } = useSpent();
+
+
+  const siguienteGasto = () => {
+    if (indiceGasto < gastos.length - 1) setIndiceGasto(indiceGasto + 1);
+    else return;
+  }
+
+  const gastoAnterior = () => {
+    if (indiceGasto > 0) setIndiceGasto(indiceGasto - 1);
+    else return;
+  }
 
   const addForm = () => {
-    setForms([...forms, { name, gasto }]);
+    const objActualizado = { ...forms[indiceGasto], integrantes: [...forms[indiceGasto].integrantes, { name, gasto }] };
+    const arrayActualizado = [...forms];
+    arrayActualizado[indiceGasto] = objActualizado;
+    setForms(arrayActualizado);
     setName('');
     setGasto([]);
     setAdditionalGasto('');
@@ -25,29 +46,32 @@ const Members = ({ navigation }) => {
 
   const addAdditionalGasto = (index) => {
     const integrantes = [...forms];
-    integrantes[index].gasto.push(0);
+    integrantes[indiceGasto].integrantes[index].gasto.push(0);
     setForms(integrantes)
   };
 
   const removeForm = (index) => {
     const updatedForms = [...forms];
-    updatedForms.splice(index, 1);
+    updatedForms[indiceGasto].integrantes.splice(index, 1);
     setForms(updatedForms);
   };
 
 
   const enviarData = () => {
     try {
-      let montoTotal = 0;
-      forms.forEach(miembro => {
-        let montoParcial = 0;
-        miembro.gasto.forEach(el => {
-          montoParcial += parseFloat(el);
-          montoTotal += parseFloat(el);
+      forms.forEach(gasto => {
+        let montoTotal = 0;
+        gasto.integrantes.forEach(integrante => {
+          let montoParcial = 0;
+          integrante.gasto.forEach(dinero => {
+            montoTotal += parseFloat(dinero);
+            montoParcial += parseFloat(dinero);
+          })
+          integrante.gastoTotal = montoParcial;
         })
-        miembro.gastoTotal = montoParcial;
+      gasto.montoTotal = montoTotal;
       });
-      calcularGastos(montoTotal, forms);
+      calcularGastos(forms);
       navigation.navigate('Result');
 
     } catch (error) {
@@ -56,10 +80,9 @@ const Members = ({ navigation }) => {
   }
 
 
-
   const removeAdditionalGasto = (index, indice) => {
     const updatedGastos = [...forms];
-    updatedGastos[index].gasto.splice(indice, 1);
+    updatedGastos[indiceGasto].integrantes[index].gasto.splice(indice, 1);
     setAdditionalGasto(updatedGastos);
   };
 
@@ -104,23 +127,25 @@ const Members = ({ navigation }) => {
 
   const updateForm = (index, field, value) => {
     const updatedForms = [...forms];
-    updatedForms[index][field] = value;
+    updatedForms[indiceGasto].integrantes[index][field] = value;
     setForms(updatedForms);
   };
   const updateGastos = (index, indice, field, value) => {
     const updatedForms = [...forms];
-    updatedForms[index][field][indice] = value;
+    updatedForms[indiceGasto].integrantes[index][field][indice] = value;
     setForms(updatedForms);
   };
 
   return (
 
     <ScrollView style={styles.container} keyboardShouldPersistTaps='always'>
-      <Text style={styles.title}>Divisor de gastos</Text>
+      <View style={styles.containerTitleGasto}>
+        <Text style={styles.titleGasto}>Gasto: {gastos[indiceGasto].title}</Text>
+      </View>
       <View style={styles.containerForms}>
-        {forms.map((form, index) => renderForm(form, index))}
+        {forms[indiceGasto]?.integrantes.map((form, index) => renderForm(form, index))}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={addForm} style={styles.button}>
+          <TouchableOpacity onPress={() => addForm(indiceGasto)} style={styles.button}>
             <Text style={styles.textButton}>Agregar persona</Text>
           </TouchableOpacity>
         </View>
@@ -135,6 +160,14 @@ const Members = ({ navigation }) => {
             <TouchableOpacity disabled={true} style={[styles.buttonSend, { backgroundColor: '#ccc' }]}><Text style={{ color: '#fff' }}>Calcular</ Text></TouchableOpacity>
           }
         </View>
+      </View>
+      <View style={styles.btnIndexContainer}>
+        <TouchableOpacity onPress={gastoAnterior} style={indiceGasto === 0 ? styles.btnBackDisabled : styles.btnBack} disabled={indiceGasto === 0 ? true : false}>
+          <Text style={styles.btnText}>Gasto anterior</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={siguienteGasto} style={indiceGasto === gastos.length - 1 ? styles.btnNextDisabled : styles.btnNext} disabled={indiceGasto === gastos.length - 1 ? true : false}>
+          <Text style={styles.btnText}>Siguiente gasto</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   )
@@ -247,5 +280,49 @@ const styles = StyleSheet.create({
   iconBtn: {
     flex: 1,
     justifyContent: 'center'
+  },
+  btnIndexContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  btnBack: {
+    backgroundColor: '#D32F2F',
+    padding: 5,
+    borderRadius: 8
+  },
+  btnNext: {
+    backgroundColor: '#2E7D32',
+    padding: 5,
+    borderRadius: 8
+  },
+  btnBackDisabled: {
+    backgroundColor: '#FFCDD2',
+    padding: 5,
+    borderRadius: 8
+  },
+  btnNextDisabled: {
+    backgroundColor: '#C8E6C9',
+    padding: 5,
+    borderRadius: 8
+  },
+  btnText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  containerTitleGasto:{
+    backgroundColor: '#365FBD',
+    padding: 5,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#0C41B9',
+    marginTop:20
+    },
+  titleGasto: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    borderRadius:8,
+    color:'white'
   }
 })

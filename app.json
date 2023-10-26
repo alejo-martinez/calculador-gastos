@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Calcula gastos",
+    "name": "Calculador gastos",
     "slug": "calculador-gastos",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/calcula-gastos.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#C7C7C7"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -19,8 +19,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/calcula-gastos.png",
+        "backgroundColor": "#C7C7C7"
       },
       "package": "com.alem98.calculadorgastos"
     },
