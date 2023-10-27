@@ -31,10 +31,16 @@ const Bills = ({ navigation }) => {
 
     const continuar = () => {
         try {
+            if(form.length === 0) throw new Error('Debes agregar un gasto.');
+            const incompleteData = form.some(gasto => {
+                const valores = Object.values(gasto);
+                return valores.some(valor => valor === '' || valor === null || valor === undefined);
+            })
+            if(incompleteData) throw new Error('Debes agregar un nombre al/los gasto/s.');
             setearGastos(form);
             navigation.navigate('Members');
         } catch (error) {
-            console.log(error);
+            setError(error.message)
         }
     }
 
@@ -57,22 +63,28 @@ const Bills = ({ navigation }) => {
 
     return (
         <ScrollView style={styles.container} keyboardShouldPersistTaps='always'>
+            <View style={styles.containerView}>
 
                 <Text style={styles.title}>Ingresa el nombre de cada gasto a calcular</Text>
                 <View style={styles.containerBtn}>
                     <TouchableOpacity onPress={() => addForm()} style={styles.btnAdd}>
-                        <Text>Agregar grupo de gasto</Text>
+                        <Text style={styles.textBtnAdd}>+Agregar</Text>
                     </TouchableOpacity>
                 </View>
 
                 {form.map((element, index) => renderForm(element, index))}
 
                 <View style={styles.containerBtnSiguiente}>
-                    <TouchableOpacity onPress={() => continuar()} style={styles.btnSiguiente}>
+                    <TouchableOpacity onPress={() => continuar()} disabled={form.length === 0 ? true : false} style={form.length === 0 ? styles.btnSiguienteDisabled : styles.btnSiguiente}>
                         <Text style={styles.btnSiguienteText}>Siguiente</Text>
                     </TouchableOpacity>
                 </View>
 
+                <View style={styles.containerError}>
+                    <Text style={styles.textError}>{error}</Text>
+                </View>
+
+            </View>
         </ScrollView>
     )
 }
@@ -83,13 +95,19 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         marginTop: getStatusBarHeight(),
-
+        // flexDirection:'column',
     },
+    // containerView:{
+    //     flex:1,
+    //     flexDirection:'column',
+    //     justifyContent:'center',
+    //     alignContent:'center'
+    // },
     title: {
         textAlign: 'center',
         marginTop: 12,
         fontSize: 16,
-        color: 'blue',
+        // color: 'blue',
         fontWeight: 'bold'
     },
     containerBtn: {
@@ -105,10 +123,16 @@ const styles = StyleSheet.create({
     },
     containerBtnSiguiente: {
         alignItems: 'center',
+        marginTop:20
     },
     btnSiguiente: {
         backgroundColor: "#4CAF50",
-        padding: 10,
+        padding: 5,
+        borderRadius: 8,
+    },
+    btnSiguienteDisabled:{
+        backgroundColor:"#dcdbdb",
+        padding: 5,
         borderRadius: 8,
     },
     btnSiguienteText: {
@@ -151,4 +175,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 8,
     },
+    containerError:{
+        marginTop:20
+    },
+    textError:{
+        textAlign:'center',
+        color:'red'
+    },
+    textBtnAdd:{
+        color:'white',
+        fontWeight:'bold'
+    }
 })
