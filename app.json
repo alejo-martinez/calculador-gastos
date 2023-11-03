@@ -4,10 +4,10 @@
     "slug": "calculador-gastos",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/calcula-gastos.png",
+    "icon": "./assets/iconocalculadorgastos.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/calcula-gastos.png",
+      "image": "./assets/calculadorgastossplash.png",
       "resizeMode": "contain",
       "backgroundColor": "#C7C7C7"
     },
@@ -20,7 +20,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/calcula-gastos.png",
+        "foregroundImage": "./assets/iconocalculadorgastos.png",
         "backgroundColor": "#C7C7C7"
       },
       "package": "com.alem98.calculadorgastos"

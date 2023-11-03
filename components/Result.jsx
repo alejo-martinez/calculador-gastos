@@ -276,21 +276,15 @@ const styles = StyleSheet.create({
 
     },
     eachTransaccion: {
-        // backgroundColor: '#A7BEF1',
         marginTop: 2,
         marginBottom: 2,
-        // justifyContent:'center',
-        // alignItems: 'flex-start',
         padding: 6,
         borderRadius: 8
-        // alignContent:'center',
-        // justifyContent:'center'
     },
     textTransaccion: {
         fontSize: 14,
         color: '#c1d2e6',
         fontWeight: 'bold',
-        // textAlign:'left'
     },
     titleTransacciones: {
         fontSize: 16,

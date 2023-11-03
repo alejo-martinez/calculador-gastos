@@ -83,7 +83,6 @@ const Bills = ({ navigation }) => {
 
                 <View style={styles.containerBtn}>
                     <TouchableOpacity onPress={() => addForm()} style={styles.btnAdd}>
-                        {/* <Text style={styles.textBtnAdd}>+Agregar</Text> */}
                         <FeatherIcon name="plus" size={50} color="#3398db" />
                     </TouchableOpacity>
                 </View>

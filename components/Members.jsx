@@ -249,7 +249,6 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     flexWrap:'nowrap',
     justifyContent:'space-between'
-    // alignItems: 'flex-end'
   },
   deleteButton: {
   },
