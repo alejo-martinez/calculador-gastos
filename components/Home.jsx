@@ -13,7 +13,6 @@ const Home = ({ navigation }) => {
     setEqualMoney('');
   }, [])
   
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Divisor de gastos</Text>
@@ -33,13 +32,13 @@ const styles = StyleSheet.create({
     flex: 1,
     maxWidth: '100%',
     marginTop: getStatusBarHeight(),
-    backgroundColor: '#F0F0F0'
+    backgroundColor: '#071422'
   },
   title: {
     fontSize: 25,
     textAlign: 'center',
     marginTop: '20%',
-    color: '#3498DB',
+    color: '#E6B82E',
     fontWeight: 'bold'
   },
   buttonContainer: {

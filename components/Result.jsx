@@ -26,7 +26,7 @@ const Result = ({ navigation }) => {
         <ScrollView style={styles.container}>
             <View style={styles.containerBtnInicio}>
                 <TouchableOpacity style={styles.btnInicio} onPress={() => navigation.navigate('Home')}>
-                    <Icon name="home" size={20} color="#2f4b75" />
+                    <Icon name="home" size={20} color="#c1d2e6" />
                 </TouchableOpacity>
                 <View style={styles.containerTitle}>
                     <Text style={styles.title}>División total de los gastos</Text>
@@ -35,11 +35,19 @@ const Result = ({ navigation }) => {
             <View style={styles.containerGastos}>
                 <View key={indiceGasto} style={styles.eachGasto}>
                     <View style={styles.infoGasto}>
-                        <Text style={styles.titleGastos}>{gasto.title}</Text>
+                        <TouchableOpacity onPress={gastoAnterior} >
+                            <Icon name="caret-left" size={30} style={indiceGasto === 0 ? styles.iconBackDisabled : styles.iconBack} />
+                        </TouchableOpacity>
                         <View>
-                            <Text style={styles.infoGastoText}>Monto total: ${gasto.montoTotal}</Text>
-                            <Text style={styles.infoGastoText}>Por persona: ${gasto.porPersona}</Text>
+                            <Text style={styles.titleGastos}>{gasto.title}</Text>
+                            <View>
+                                <Text style={styles.infoGastoText}>Monto total: ${gasto.montoTotal.toFixed(2)}</Text>
+                                <Text style={styles.infoGastoText}>Por persona: ${gasto.porPersona.toFixed(2)}</Text>
+                            </View>
                         </View>
+                        <TouchableOpacity onPress={siguienteGasto}>
+                            <Icon name="caret-right" color="#ffffff" size={30} style={indiceGasto === eachSpent.length - 1 ? styles.iconNextDisabled : styles.iconNext} />
+                        </TouchableOpacity>
                     </View>
                     {gasto.integrantes.map((miembro, i) => {
                         return (
@@ -47,7 +55,7 @@ const Result = ({ navigation }) => {
                                 {miembro.debe === true ? (
                                     <View style={styles.containerResponseNegative}>
                                         <Text style={styles.spentResponseNegative}>{miembro.name}</Text>
-                                        {miembro.gastoTotal == 0 ? <Text style={styles.infoDeudas}>No tuvo gastos</Text> : <Text style={styles.infoDeudas}>Gasto total: ${miembro.gastoTotal}</Text>}
+                                        {miembro.gastoTotal == 0 ? <Text style={styles.infoDeudas}>No tuvo gastos</Text> : <Text style={styles.infoDeudas}>Gasto total: ${miembro.gastoTotal.toFixed(2)}</Text>}
                                         <Text style={styles.infoDeudas}>Debe pagar: ${(miembro.gastando * -1).toFixed(2)}</Text>
                                     </View>)
                                     :
@@ -55,7 +63,9 @@ const Result = ({ navigation }) => {
                                         <View style={styles.containerResponsePositive}>
                                             <Text style={styles.spentResponsePositive}>{miembro.name}</Text>
                                             <Text style={styles.infoDeudas}>Gasto total: ${miembro.gastoTotal.toFixed(2)}</Text>
-                                            <Text style={styles.infoDeudas}>Debe recibir: ${miembro.gastando.toFixed(2)}</Text>
+                                            {miembro.gastando === 0 ? <Text style={styles.infoDeudas}>No debe pagar ni recibir dinero</Text>
+                                             :
+                                                <Text style={styles.infoDeudas}>Debe recibir: ${miembro.gastando.toFixed(2)}</Text>}
                                         </View>)
                                         :
                                         <Text style={styles.spentResponseNeutral}>{miembro.name} no debe ni recibe dinero</Text>}
@@ -64,14 +74,16 @@ const Result = ({ navigation }) => {
                     })}
 
                 </View>
-            </View>
-            <View style={styles.btnIndexContainer}>
-                <TouchableOpacity onPress={gastoAnterior} style={indiceGasto === 0 ? styles.btnBackDisabled : styles.btnBack} disabled={indiceGasto === 0 ? true : false}>
-                    <Text style={styles.btnText}>Gasto anterior</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={siguienteGasto} style={indiceGasto === eachSpent.length - 1 ? styles.btnNextDisabled : styles.btnNext} disabled={indiceGasto === eachSpent.length - 1 ? true : false}>
-                    <Text style={styles.btnText}>Siguiente gasto</Text>
-                </TouchableOpacity>
+                <View style={styles.containerTransacciones}>
+                    <Text style={styles.titleTransacciones}>Pagos:</Text>
+                    {gasto.transacciones.map((transaccion, i) => {
+                        return (
+                            <View key={transaccion.id} style={styles.eachTransaccion}>
+                                <Text style={styles.textTransaccion}>{transaccion.deudor} debe pagarle ${transaccion.pago.toFixed(2)} a {transaccion.acreedor}</Text>
+                            </View>
+                        )
+                    })}
+                </View>
             </View>
         </ScrollView>
     )
@@ -83,12 +95,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         marginTop: getStatusBarHeight(),
-        backgroundColor: '#F0F0F0'
+        backgroundColor: '#071422'
     },
     title: {
         textAlign: 'center',
         fontSize: 20,
-        color: '#555555',
+        color: '#E6B82E',
 
     },
     containerGastos: {
@@ -183,7 +195,7 @@ const styles = StyleSheet.create({
     },
     infoDeudas: {
         fontWeight: 'bold',
-        color: '#6d3e74',
+        color: '#071422',
         padding: 4
     },
     tituloGastos: {
@@ -204,13 +216,14 @@ const styles = StyleSheet.create({
     infoGasto: {
         flex: 1,
         flexDirection: 'row',
+        flexWrap: 'nowrap',
         justifyContent: 'space-between',
-        backgroundColor: '#365FBD',
+        backgroundColor: '#001b6f',
         padding: 5,
         borderRadius: 8,
-        alignItems: 'center',
         borderWidth: 2,
-        borderColor: '#0C41B9'
+        borderColor: '#0C41B9',
+        alignItems: 'center',
     },
     infoGastoText: {
         color: '#c1d2e6',
@@ -223,29 +236,76 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-around',
-      },
-      btnBack: {
+    },
+    btnBack: {
         backgroundColor: '#D32F2F',
         padding: 5,
         borderRadius: 8
-      },
-      btnNext: {
+    },
+    btnNext: {
         backgroundColor: '#2E7D32',
         padding: 5,
         borderRadius: 8
-      },
-      btnBackDisabled: {
+    },
+    btnBackDisabled: {
         backgroundColor: '#FFCDD2',
         padding: 5,
         borderRadius: 8
-      },
-      btnNextDisabled: {
+    },
+    btnNextDisabled: {
         backgroundColor: '#C8E6C9',
         padding: 5,
         borderRadius: 8
-      },
-      btnText: {
+    },
+    btnText: {
         color: 'white',
         fontWeight: 'bold',
-      },
+    },
+    containerTransacciones: {
+        backgroundColor: '#001b6f',
+        flex: 1,
+        alignContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
+        flexDirection: 'column',
+        padding: 5,
+        borderRadius: 8,
+        borderWidth: 2,
+        borderColor: '#0C41B9',
+        width: '80%'
+
+    },
+    eachTransaccion: {
+        // backgroundColor: '#A7BEF1',
+        marginTop: 2,
+        marginBottom: 2,
+        // justifyContent:'center',
+        // alignItems: 'flex-start',
+        padding: 6,
+        borderRadius: 8
+        // alignContent:'center',
+        // justifyContent:'center'
+    },
+    textTransaccion: {
+        fontSize: 14,
+        color: '#c1d2e6',
+        fontWeight: 'bold',
+        // textAlign:'left'
+    },
+    titleTransacciones: {
+        fontSize: 16,
+        color: '#c1d2e6'
+    },
+    iconNext: {
+        color: '#ffffff',
+    },
+    iconNextDisabled: {
+        color: '#001b6f'
+    },
+    iconBack: {
+        color: '#ffffff'
+    },
+    iconBackDisabled: {
+        color: '#001b6f'
+    },
 })

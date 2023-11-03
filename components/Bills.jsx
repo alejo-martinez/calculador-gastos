@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 import { useSpent } from './context/spentContext';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 
@@ -56,7 +57,7 @@ const Bills = ({ navigation }) => {
                 </View>
             </View>
             <View style={styles.inputContainer}>
-                <TextInput placeholder={'Comida / bebida / etc...'} value={form.title} onChangeText={(text) => updateForm(index, 'title', text)} style={styles.input} />
+                <TextInput placeholder={'Título del gasto'} value={form.title} onChangeText={(text) => updateForm(index, 'title', text)} style={styles.input} />
             </View>
         </View>
     )
@@ -65,12 +66,8 @@ const Bills = ({ navigation }) => {
         <ScrollView style={styles.container} keyboardShouldPersistTaps='always'>
             <View style={styles.containerView}>
 
-                <Text style={styles.title}>Ingresa el nombre de cada gasto a calcular</Text>
-                <View style={styles.containerBtn}>
-                    <TouchableOpacity onPress={() => addForm()} style={styles.btnAdd}>
-                        <Text style={styles.textBtnAdd}>+Agregar</Text>
-                    </TouchableOpacity>
-                </View>
+                <Text style={styles.title}>Tipos de gastos</Text>
+
 
                 {form.map((element, index) => renderForm(element, index))}
 
@@ -84,6 +81,13 @@ const Bills = ({ navigation }) => {
                     <Text style={styles.textError}>{error}</Text>
                 </View>
 
+                <View style={styles.containerBtn}>
+                    <TouchableOpacity onPress={() => addForm()} style={styles.btnAdd}>
+                        {/* <Text style={styles.textBtnAdd}>+Agregar</Text> */}
+                        <FeatherIcon name="plus" size={50} color="#3398db" />
+                    </TouchableOpacity>
+                </View>
+
             </View>
         </ScrollView>
     )
@@ -95,31 +99,27 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         marginTop: getStatusBarHeight(),
-        // flexDirection:'column',
+        backgroundColor:'#071422',
     },
-    // containerView:{
-    //     flex:1,
-    //     flexDirection:'column',
-    //     justifyContent:'center',
-    //     alignContent:'center'
-    // },
+    containerView:{
+        marginTop:'10%',
+        alignItems:'center',
+        flex:1
+    },
     title: {
         textAlign: 'center',
         marginTop: 12,
-        fontSize: 16,
-        // color: 'blue',
+        fontSize: 20,
+        color: '#E6B82E',
         fontWeight: 'bold'
     },
     containerBtn: {
-        alignItems: 'center',
-        marginTop: 18
+        marginRight:12,
+        alignSelf:'flex-end',
     },
     btnAdd: {
-        backgroundColor: "#039be5",
         padding: 4,
         borderRadius: 8,
-        // alignItems:'center',
-        // alignContent:'center'
     },
     containerBtnSiguiente: {
         alignItems: 'center',
@@ -139,7 +139,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: 'white',
         fontWeight: 'bold',
-        // justifyContent:'flex-end'
     },
     formContainer: {
         backgroundColor: '#ffffff',
@@ -147,7 +146,8 @@ const styles = StyleSheet.create({
         padding: 16,
         marginBottom: 16,
         elevation: 3,
-        marginTop: 25
+        marginTop: 25,
+        width:'50%',
     },
     formTitle: {
         fontSize: 18,
@@ -169,11 +169,6 @@ const styles = StyleSheet.create({
     input: {
         paddingHorizontal: 12,
         fontSize: 16,
-    },
-    formTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 8,
     },
     containerError:{
         marginTop:20

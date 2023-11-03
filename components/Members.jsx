@@ -69,13 +69,14 @@ const Members = ({ navigation }) => {
           })
           integrante.gastoTotal = montoParcial;
         })
-      gasto.montoTotal = montoTotal;
+        gasto.montoTotal = montoTotal;
       });
       calcularGastos(forms);
       navigation.navigate('Result');
 
     } catch (error) {
-      setError(error.message)
+      setError(error.message);
+      console.log(error);
     }
   }
 
@@ -90,11 +91,11 @@ const Members = ({ navigation }) => {
   const renderForm = (form, index) => (
     <View key={index} style={styles.formContainer}>
       <View style={styles.deleteButtonContainer}>
+      <Text style={styles.formTitle}>Integrante {index + 1}</Text>
         <TouchableOpacity style={styles.deleteButton} onPress={() => removeForm(index)}>
           <Icon name="times" size={26} color="red" />
         </TouchableOpacity>
       </View>
-      <Text style={styles.formTitle}>Integrante {index + 1}</Text>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -118,7 +119,7 @@ const Members = ({ navigation }) => {
 
       <View style={styles.addSpentContainer}>
         <TouchableOpacity style={styles.addSpentButton} onPress={() => addAdditionalGasto(index)}>
-          <Text style={styles.addSpentText}>+Agregar gasto</Text>
+          <Icon name='dollar' size={14} color="#ffffff"/>
         </TouchableOpacity>
       </View>
 
@@ -140,35 +141,37 @@ const Members = ({ navigation }) => {
 
     <ScrollView style={styles.container} keyboardShouldPersistTaps='always'>
       <View style={styles.containerTitleGasto}>
+
+        <TouchableOpacity onPress={gastoAnterior} disabled={indiceGasto === 0 ? true : false}>
+          <Icon name="caret-left" size={30} style={indiceGasto === 0 ? styles.iconBackDisabled : styles.iconBack}/>
+        </TouchableOpacity>
+
         <Text style={styles.titleGasto}>Gasto: {gastos[indiceGasto].title}</Text>
+
+          <TouchableOpacity onPress={siguienteGasto} disabled={indiceGasto === gastos.length - 1 ? true : false}>
+            <Icon name="caret-right" color="#ffffff" size={30} style={indiceGasto === gastos.length - 1 ? styles.iconNextDisabled : styles.iconNext}/>
+          </TouchableOpacity>
       </View>
       <View style={styles.containerForms}>
         {forms[indiceGasto]?.integrantes.map((form, index) => renderForm(form, index))}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={() => addForm(indiceGasto)} style={styles.button}>
-            <Text style={styles.textButton}>Agregar persona</Text>
-          </TouchableOpacity>
-        </View>
+
         <View>{error && <Text style={styles.errorText}>{error}</Text>}
         </View>
         <View style={styles.buttonSendContainer}>
-          {forms.length > 0 ?
+          {forms[indiceGasto]?.integrantes.length > 0 ?
             <TouchableOpacity style={styles.buttonSend} onPress={() => enviarData()}>
               <Text style={styles.buttonSendText}>Calcular</Text>
             </TouchableOpacity>
             :
-            <TouchableOpacity disabled={true} style={[styles.buttonSend, { backgroundColor: '#ccc' }]}><Text style={{ color: '#fff' }}>Calcular</ Text></TouchableOpacity>
+            <TouchableOpacity disabled={true} style={styles.buttonSendDisabled}><Text style={{ color: '#fff' }}>Calcular</ Text></TouchableOpacity>
           }
         </View>
       </View>
-      <View style={styles.btnIndexContainer}>
-        <TouchableOpacity onPress={gastoAnterior} style={indiceGasto === 0 ? styles.btnBackDisabled : styles.btnBack} disabled={indiceGasto === 0 ? true : false}>
-          <Text style={styles.btnText}>Gasto anterior</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={siguienteGasto} style={indiceGasto === gastos.length - 1 ? styles.btnNextDisabled : styles.btnNext} disabled={indiceGasto === gastos.length - 1 ? true : false}>
-          <Text style={styles.btnText}>Siguiente gasto</Text>
-        </TouchableOpacity>
-      </View>
+      <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={() => addForm(indiceGasto)} style={styles.button}>
+            <Icon name="user-plus" size={26}/>
+          </TouchableOpacity>
+        </View>
     </ScrollView>
   )
 }
@@ -179,13 +182,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: getStatusBarHeight(),
-    backgroundColor: '#F0F0F0'
+    backgroundColor: '#071422'
   },
   title: {
     textAlign: 'center',
     fontSize: 21,
     marginTop: '20%',
-    color: '#3498DB'
+    color: '#176092'
   },
   button: {
     backgroundColor: '#66CDAA',
@@ -193,8 +196,8 @@ const styles = StyleSheet.create({
     borderRadius: 7
   },
   buttonContainer: {
-    alignItems: 'center',
-    marginTop: '10%'
+    marginRight:12,
+    alignItems: 'flex-end',
   },
   textButton: {
     color: "white",
@@ -205,11 +208,14 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     elevation: 3,
+    width:'70%',
+    alignSelf:'center'
   },
   formTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
+    color:'#032858'
   },
   inputContainer: {
     backgroundColor: '#f0f0f0',
@@ -221,6 +227,7 @@ const styles = StyleSheet.create({
   input: {
     paddingHorizontal: 12,
     fontSize: 16,
+    width:'90%'
   },
   buttonSend: {
     backgroundColor: '#3498DB',
@@ -228,7 +235,8 @@ const styles = StyleSheet.create({
     borderRadius: 5
   },
   buttonSendText: {
-    color: 'white',
+    color: '#032858',
+    fontWeight:'bold',
     fontSize: 18
   },
   buttonSendContainer: {
@@ -237,7 +245,11 @@ const styles = StyleSheet.create({
     marginBottom: 15
   },
   deleteButtonContainer: {
-    alignItems: 'flex-end'
+    flex:1,
+    flexDirection:'row',
+    flexWrap:'nowrap',
+    justifyContent:'space-between'
+    // alignItems: 'flex-end'
   },
   deleteButton: {
   },
@@ -258,7 +270,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-start',
-    marginBottom: 2,
     marginTop: 2,
     marginLeft: 5
   },
@@ -268,8 +279,8 @@ const styles = StyleSheet.create({
     fontSize: 12
   },
   addSpentButton: {
-    backgroundColor: 'green',
-    padding: 2,
+    backgroundColor: '#05421f',
+    padding: 8,
     borderRadius: 5,
   },
   deleteSpentContainer: {
@@ -287,22 +298,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   btnBack: {
-    backgroundColor: '#D32F2F',
+
     padding: 5,
-    borderRadius: 8
+    borderRadius: 8,
+    
   },
   btnNext: {
-    backgroundColor: '#2E7D32',
+
     padding: 5,
     borderRadius: 8
   },
   btnBackDisabled: {
-    backgroundColor: '#FFCDD2',
+    backgroundColor:'#001b6f',
     padding: 5,
     borderRadius: 8
   },
   btnNextDisabled: {
-    backgroundColor: '#C8E6C9',
+    backgroundColor:'#001b6f',
     padding: 5,
     borderRadius: 8
   },
@@ -310,19 +322,39 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-  containerTitleGasto:{
-    backgroundColor: '#365FBD',
-    padding: 5,
+  containerTitleGasto: {
+    flex:1,
+    flexDirection:'row',
+    flexWrap:'nowrap',
+    justifyContent:'space-around',
+    alignContent:'center',
+    backgroundColor: '#001b6f',
+    padding: 10,
     borderRadius: 8,
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#0C41B9',
-    marginTop:20
-    },
+
+  },
   titleGasto: {
-    fontSize: 16,
+    fontSize: 19,
     fontWeight: 'bold',
-    borderRadius:8,
-    color:'white'
+    borderRadius: 8,
+    color: '#E6B82E'
+  },
+  iconNext:{
+    color:'#ffffff',
+  },
+  iconNextDisabled:{
+    color:'#001b6f'
+  },
+  iconBack:{
+    color:'#ffffff'
+  },
+  iconBackDisabled:{
+    color:'#001b6f'
+  },
+  buttonSendDisabled:{
+    backgroundColor:"#C0C0C1",
+    padding:7,
+    borderRadius:5
   }
 })
