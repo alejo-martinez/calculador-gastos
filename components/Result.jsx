@@ -3,14 +3,18 @@ import React, { useEffect, useState } from 'react';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { useSpent } from './context/spentContext';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { LinearGradient } from 'expo-linear-gradient';
+import ModalTransactions from './ModalTransactions';
 
 const Result = ({ navigation }) => {
 
     const [indiceGasto, setIndiceGasto] = useState(0);
+    const [visible, setVisible] = useState(false)
 
     const { eachSpent } = useSpent();
 
     const gasto = eachSpent[indiceGasto];
+
 
     const siguienteGasto = () => {
         if (indiceGasto < eachSpent.length - 1) setIndiceGasto(indiceGasto + 1);
@@ -23,69 +27,84 @@ const Result = ({ navigation }) => {
     }
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.containerBtnInicio}>
-                <TouchableOpacity style={styles.btnInicio} onPress={() => navigation.navigate('Home')}>
-                    <Icon name="home" size={20} color="#c1d2e6" />
-                </TouchableOpacity>
-                <View style={styles.containerTitle}>
-                    <Text style={styles.title}>División total de los gastos</Text>
-                </View>
-            </View>
-            <View style={styles.containerGastos}>
-                <View key={indiceGasto} style={styles.eachGasto}>
-                    <View style={styles.infoGasto}>
-                        <TouchableOpacity onPress={gastoAnterior} >
-                            <Icon name="caret-left" size={30} style={indiceGasto === 0 ? styles.iconBackDisabled : styles.iconBack} />
-                        </TouchableOpacity>
-                        <View>
-                            <Text style={styles.titleGastos}>{gasto.title}</Text>
-                            <View>
-                                <Text style={styles.infoGastoText}>Monto total: ${gasto.montoTotal.toFixed(2)}</Text>
-                                <Text style={styles.infoGastoText}>Por persona: ${gasto.porPersona.toFixed(2)}</Text>
-                            </View>
-                        </View>
-                        <TouchableOpacity onPress={siguienteGasto}>
-                            <Icon name="caret-right" color="#ffffff" size={30} style={indiceGasto === eachSpent.length - 1 ? styles.iconNextDisabled : styles.iconNext} />
-                        </TouchableOpacity>
+        <LinearGradient
+            colors={['#F0EAD6', '#EFCB82']}
+            style={{ flex: 1 }}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+        >
+            <ScrollView style={styles.container}>
+                <View style={styles.containerBtnInicio}>
+                    <TouchableOpacity style={styles.btnInicio} onPress={() => navigation.navigate('Home')}>
+                        <Icon name="home" size={20} color="#001659" />
+                    </TouchableOpacity>
+                    <View style={styles.containerTitle}>
+                        <Text style={styles.title}>División total de los gastos</Text>
                     </View>
-                    {gasto.integrantes.map((miembro, i) => {
-                        return (
-                            <View key={`gas${i}`}>
-                                {miembro.debe === true ? (
-                                    <View style={styles.containerResponseNegative}>
-                                        <Text style={styles.spentResponseNegative}>{miembro.name}</Text>
-                                        {miembro.gastoTotal == 0 ? <Text style={styles.infoDeudas}>No tuvo gastos</Text> : <Text style={styles.infoDeudas}>Gasto total: ${miembro.gastoTotal.toFixed(2)}</Text>}
-                                        <Text style={styles.infoDeudas}>Debe pagar: ${(miembro.gastando * -1).toFixed(2)}</Text>
-                                    </View>)
-                                    :
-                                    miembro.debe === false ? (
-                                        <View style={styles.containerResponsePositive}>
-                                            <Text style={styles.spentResponsePositive}>{miembro.name}</Text>
-                                            <Text style={styles.infoDeudas}>Gasto total: ${miembro.gastoTotal.toFixed(2)}</Text>
-                                            {miembro.gastando === 0 ? <Text style={styles.infoDeudas}>No debe pagar ni recibir dinero</Text>
-                                             :
-                                                <Text style={styles.infoDeudas}>Debe recibir: ${miembro.gastando.toFixed(2)}</Text>}
+                </View>
+                <View style={styles.containerGastos}>
+                    <View key={indiceGasto} style={styles.eachGasto}>
+                        <View style={styles.infoGasto}>
+                            <TouchableOpacity onPress={gastoAnterior} >
+                                <Icon name="caret-left" size={30} style={indiceGasto === 0 ? styles.iconBackDisabled : styles.iconBack} />
+                            </TouchableOpacity>
+                            <View>
+                                <Text style={styles.titleGastos}>{gasto.title}</Text>
+                                <View>
+                                    <Text style={styles.infoGastoText}>Monto total: ${gasto.montoTotal.toFixed(2)}</Text>
+                                    <Text style={styles.infoGastoText}>Por persona: ${gasto.porPersona.toFixed(2)}</Text>
+                                </View>
+                            </View>
+                            <TouchableOpacity onPress={siguienteGasto}>
+                                <Icon name="caret-right" color="#ffffff" size={30} style={indiceGasto === eachSpent.length - 1 ? styles.iconNextDisabled : styles.iconNext} />
+                            </TouchableOpacity>
+                        </View>
+                        {gasto.integrantes.map((miembro, i) => {
+                            return (
+                                <View key={`gas${i}`}>
+                                    {miembro.debe === true ? (
+                                        <View style={styles.containerResponseNegative}>
+                                            <Text style={styles.spentResponseNegative}>{miembro.name}</Text>
+                                            {miembro.totalExpense == 0 ? <Text style={styles.infoDeudas}>No tuvo gastos</Text> : <Text style={styles.infoDeudas}>Gasto total: ${miembro.totalExpense}</Text>}
+                                            <Text style={styles.infoDeudas}>Debe pagar: ${(miembro.gastando * -1).toFixed(2)}</Text>
                                         </View>)
                                         :
-                                        <Text style={styles.spentResponseNeutral}>{miembro.name} no debe ni recibe dinero</Text>}
-                            </View>
-                        )
-                    })}
+                                        miembro.debe === false ? (
+                                            <View style={styles.containerResponsePositive}>
+                                                <Text style={styles.spentResponsePositive}>{miembro.name}</Text>
+                                                <Text style={styles.infoDeudas}>Gasto total: ${miembro.totalExpense.toFixed(2)}</Text>
+                                                {miembro.gastando === 0 ? <Text style={styles.infoDeudas}>No debe pagar ni recibir dinero</Text>
+                                                    :
+                                                    <Text style={styles.infoDeudas}>Debe recibir: ${miembro.gastando.toFixed(2)}</Text>}
+                                            </View>)
+                                            :
+                                            <Text style={styles.spentResponseNeutral}>{miembro.name} no debe ni recibe dinero</Text>}
+                                </View>
+                            )
+                        })}
 
-                </View>
-                <View style={styles.containerTransacciones}>
+                    </View>
+                    {visible && (<View style={styles.overlay}>
+                        <ModalTransactions visible={visible} onClose={() => setVisible(false)} gasto={gasto} />
+                    </View>)}
+                    <View style={styles.divBtnTransactions}>
+                        <TouchableOpacity style={styles.btnTransactions} onPress={() => setVisible(true)}>
+                            <Text style={styles.textBtnTransactions}>Ver transacciones</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {/* <View style={styles.containerTransacciones}>
                     <Text style={styles.titleTransacciones}>Pagos:</Text>
                     {gasto.transacciones.map((transaccion, i) => {
                         return (
                             <View key={transaccion.id} style={styles.eachTransaccion}>
-                                <Text style={styles.textTransaccion}>{transaccion.deudor} debe pagarle ${transaccion.pago.toFixed(2)} a {transaccion.acreedor}</Text>
+                                <Text style={styles.textTransaccion}>{transaccion.deudor} debe pagarle ${transaccion.pago} a {transaccion.acreedor}</Text>
                             </View>
                         )
                     })}
+                </View> */}
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </LinearGradient>
     )
 }
 
@@ -95,12 +114,23 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         marginTop: getStatusBarHeight(),
-        backgroundColor: '#071422'
+        // backgroundColor: '#071422'
+    },
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     title: {
         textAlign: 'center',
         fontSize: 20,
-        color: '#E6B82E',
+        color: '#001659',
+        fontWeight: 'bold'
 
     },
     containerGastos: {
@@ -261,34 +291,18 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
     },
-    containerTransacciones: {
-        backgroundColor: '#001b6f',
-        flex: 1,
-        alignContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'center',
-        flexDirection: 'column',
-        padding: 5,
-        borderRadius: 8,
-        borderWidth: 2,
-        borderColor: '#0C41B9',
-        width: '80%'
-
+    divBtnTransactions: {
+        justifyContent: 'center',
+        alignItems: 'center'
     },
-    eachTransaccion: {
-        marginTop: 2,
-        marginBottom: 2,
-        padding: 6,
-        borderRadius: 8
+    btnTransactions: {
+        backgroundColor: '#001659',
+        padding: 8,
+        borderRadius: 4
     },
-    textTransaccion: {
-        fontSize: 14,
-        color: '#c1d2e6',
-        fontWeight: 'bold',
-    },
-    titleTransacciones: {
-        fontSize: 16,
-        color: '#c1d2e6'
+    textBtnTransactions: {
+        color: '#fff',
+        fontWeight: 'bold'
     },
     iconNext: {
         color: '#ffffff',

@@ -15,6 +15,7 @@ const SpentProvider = ({ children }) => {
     const [eachSpent, setEachSpent] = useState([]);
     const [transacciones, setTransacciones] = useState([]);
     const [gastos, setGastos] = useState([]);
+    const [integrante, setIntegrante] = useState({name: '', })
 
     const calcularGastos = (arrayGastos) => {
         arrayGastos.forEach(gasto => {
@@ -26,19 +27,19 @@ const SpentProvider = ({ children }) => {
             if (gasto.integrantes.length <= 1) throw new Error('Debes agregar al menos 2 personas');
             if (!gasto.montoTotal || gasto.montoTotal === 0) throw new Error('El total de los gastos debe ser mayor a 0');
             const cantMiembros = gasto.integrantes.length;
-            const gastoPorIgual = (gasto.montoTotal / cantMiembros);
+            const gastoPorIgual = (Number(gasto.montoTotal) / Number(cantMiembros));
             gasto.porPersona = gastoPorIgual;
             gasto.integrantes.forEach(integrante => {
-                let gastoMiembro = parseFloat(integrante.gastoTotal) - gastoPorIgual;
+                let gastoMiembro = Number(integrante.totalExpense) - Number(gastoPorIgual);
                 integrante.id = uuidv4();
-                integrante.gastando = gastoMiembro;
+                integrante.gastando = Number(gastoMiembro);
                 integrante.debe = gastoMiembro < 0 ? true : false;
             });
 
         })
 
         arrayGastos.forEach(gasto =>{
-            const miembrosOrdenados = gasto.integrantes.slice().sort((a, b) => b.gastando - a.gastando);
+            const miembrosOrdenados = gasto.integrantes.slice().sort((a, b) => Number(b.gastando) - Number(a.gastando));
             const pagadores = [];
             const receptores = [];
             gasto.transacciones = [];
@@ -55,13 +56,13 @@ const SpentProvider = ({ children }) => {
                 for (let j = 0; j < pagadores.length; j++) {
                     let pagador = pagadores[j];
                     if(pagador.gastando == 0) return;
-                    let pago = Math.min(receptor.gastando, Math.abs(pagador.gastando));
+                    let pago = Math.min(Number(receptor.gastando), Math.abs(Number(pagador.gastando)));
                     
                     let transaccion = { deudor: pagador.name, acreedor: receptor.name, pago: pago, id: uuidv4() };
                     gasto.transacciones.push(transaccion);
 
-                    receptor.gastando -= pago;
-                    pagador.gastando += pago;
+                    receptor.gastando -= Number(pago);
+                    pagador.gastando += Number(pago);
 
                     if (receptor.gastando === 0 && pagador.gastando === 0) {
                         receptores.splice(i, 1);
